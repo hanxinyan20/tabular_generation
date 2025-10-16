@@ -1,0 +1,43 @@
+
+benchmark_name: bcco_106
+
+model_file: /mnt/public/hxy/project/tabpfn-v2-classifier.ckpt
+
+save_dir: "/mnt/public/hxy/diff_data/quantile_normal_bcco_106/"
+overwrite: true
+
+dataset_filter_params:
+  min_features: 2
+  max_features: 500
+  min_samples: 50
+  max_samples: 200000
+  pad_to: 1024
+
+embedding_strategy : "small_batch_average"
+
+embedding_params:
+  batch_size_max_ratio: 0.5
+  batch_size_min_ratio: 0.1
+  num_embeddings_min: 10
+  num_embeddings_max: 50
+
+max_num_samples_per_dataset: 4000
+
+preprocess_config_pfn_input:
+    max_unique_values_for_categorical: 20
+    impute_numerical_strategy: "None"
+    impute_categorical_strategy: "missing"
+    categorical_encoding_strategy: "label"
+    numerical_scaling_strategy: "min-max"
+    y_encoding_strategy: "label"
+  
+preprocess_config_diff_input:
+    max_unique_values_for_categorical: 20
+    impute_numerical_strategy: "zero"
+    impute_categorical_strategy: "missing"
+    categorical_encoding_strategy: "one-hot"
+    numerical_scaling_strategy: "quantile_normal"
+    y_encoding_strategy: "one-hot"
+    y_max_classes: 10
+
+

@@ -1,0 +1,76 @@
+benchmark_name: benchmark_504
+experiment_name: "quantile_uniform"
+model_file: /mnt/public/hxy/project/tabpfn-v2-classifier.ckpt
+
+save_base_dir: "/mnt/public/hxy/diff_data/"
+overwrite: true
+
+dataset_filter_params:
+  min_features: 2
+  max_features: 500
+  min_samples: 50
+  max_samples: 200000
+  pad_to: 1024
+
+embedding_strategy : "small_batch_average"
+
+embedding_params:
+  batch_size_max_ratio: 0.5
+  batch_size_min_ratio: 0.1
+  num_embeddings_min: 10
+  num_embeddings_max: 50
+
+max_num_samples_per_dataset: 4000
+
+preprocess_config_pfn_input:
+    max_unique_values_for_categorical: 20
+    impute_numerical_strategy: "None"
+    impute_categorical_strategy: "missing"
+    categorical_encoding_strategy: "label"
+    numerical_scaling_strategy: "min-max"
+    y_encoding_strategy: "label"
+  
+preprocess_config_diff_input:
+    max_unique_values_for_categorical: 20
+    impute_numerical_strategy: "zero"
+    impute_categorical_strategy: "missing"
+    categorical_encoding_strategy: "one-hot"
+    numerical_scaling_strategy: "quantile_uniform"
+    y_encoding_strategy: "one-hot"
+    y_max_classes: 10
+
+# Training config
+seed: 0
+
+model_type: "mlp"
+
+model_params:
+  d_y: 10
+  is_y_cond: true
+  d_embedding: 192
+  is_embedding_cond: true
+  rtdl_params:
+    d_layers: [1024, 1024, 1024, 1024, 512]
+    dropout: 0.0
+  dim_t: 128
+  padding_to: 1024
+  padding_value: 0.0
+
+steps : 100000
+lr: 8e-5
+batch_size_per_gpu: 16
+gradient_accumulate_every: 2
+ema_update_every: 10
+ema_decay: 0.995
+adam_betas: [0.9, 0.99]
+weight_decay: 1e-4
+amp: True
+mixed_precision_type: "fp16"
+split_batches: true
+max_grad_norm: 1.0
+save_and_sample_every: 10000
+num_samples: 9
+results_base_dir: "./results"
+num_timesteps: 1000
+gaussian_loss_type: "mse"
+scheduler: "cosine"
